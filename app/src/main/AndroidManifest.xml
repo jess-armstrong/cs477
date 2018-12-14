@@ -11,6 +11,8 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <service android:name=".services.MusicService" />
         <service android:name=".services.MainMusicService" />
+        <uses-permission android:name="android.permission.INTERNET"/>
+        <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
         <activity
             android:name=".MainActivity"

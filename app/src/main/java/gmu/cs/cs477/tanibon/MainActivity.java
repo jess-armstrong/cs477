@@ -152,12 +152,12 @@ public class MainActivity extends AppCompatActivity {
                 UserDB max = null;
                 // Loop through query results
                 for (int i = 0; i < result.size(); i++) {
-                    if (UserDB curr = result.get(i).score > max.score){
+                    if (UserDB curr = result.get(i)._score > max._score){
                         max = curr;
                     }
                 }
 
-                maxName = max.userName;
+                maxName = max._userName;
 
             }
         }).start();
