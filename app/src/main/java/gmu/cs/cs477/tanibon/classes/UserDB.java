@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@DynamoDBTable(tableName = "nosqlnews-mobilehub-1234567890-News")
+@DynamoDBTable(tableName = "tanibon-mobilehub-1025349641-User")
 
 public class NewsDO {
     private String _userId;
