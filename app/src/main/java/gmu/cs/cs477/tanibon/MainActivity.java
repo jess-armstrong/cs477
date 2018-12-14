@@ -11,6 +11,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.config.AWSConfiguration;
+
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+
 
 import gmu.cs.cs477.tanibon.services.MusicService;
 
@@ -21,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     boolean music_playing = true;
     int easter_egg = 0;
     public enum fragmentType { NEW_GAME, CONTINUE_GAME}
+    DynamoDBMapper dynamoDBMapper; // Declare a DynamoDBMapper object
 
 
     @Override
@@ -32,6 +40,21 @@ public class MainActivity extends AppCompatActivity {
         AlphaAnimation fadeOut = new AlphaAnimation( 1.0f , 0.0f ) ;
         title_bird = findViewById(R.id.title_bird);
         aO = ActivityOptions.makeSceneTransitionAnimation(this, title_bird, "first_bird");
+
+        // AWSMobileClient enables AWS user credentials to access your table
+        AWSMobileClient.getInstance().initialize(this).execute();
+
+        AWSCredentialsProvider credentialsProvider = AWSMobileClient.getInstance().getCredentialsProvider();
+        AWSConfiguration configuration = AWSMobileClient.getInstance().getConfiguration();
+
+
+        // Add code to instantiate a AmazonDynamoDBClient
+        AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(credentialsProvider);
+
+        this.dynamoDBMapper = DynamoDBMapper.builder()
+                .dynamoDBClient(dynamoDBClient)
+                .awsConfiguration(configuration)
+                .build();
 
         rotate = ObjectAnimator.ofFloat(title_bird, "rotation",   0f, 30f, 0f, -10f, 0f, 30f, 0f);
         rotate.setRepeatCount(20000);
@@ -112,3 +135,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+
+    public String topScoreQuery() {
+
+        final String maxName = null;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                DynamoDBQueryExpression queryExpression = new DynamoDBQueryExpression()
+                        .withConsistentRead(false);
+
+                PaginatedList<UserDB> result = dynamoDBMapper.query(UserDB.class, queryExpression);
+
+                UserDB max = null;
+                // Loop through query results
+                for (int i = 0; i < result.size(); i++) {
+                    if (UserDB curr = result.get(i).score > max.score){
+                        max = curr;
+                    }
+                }
+
+                maxName = max.userName;
+
+            }
+        }).start();
+
+
+    }
